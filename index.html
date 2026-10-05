@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Catat Pendapatan — Mitra Gojek & Grab</title>
+<style>
+:root{
+  --bg:#0f1115; --card:#1a1e26; --card2:#222836; --text:#f2f4f8; --muted:#9aa3b2;
+  --green:#22c55e; --red:#ef4444; --blue:#3b82f6; --orange:#f97316; --purple:#a855f7;
+  --radius:16px;
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+body{margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; background:var(--bg); color:var(--text); padding-bottom:96px;}
+header{position:sticky; top:0; z-index:10; background:rgba(15,17,21,.92); backdrop-filter:blur(8px); padding:14px 16px 10px; border-bottom:1px solid #242a36;}
+header h1{margin:0; font-size:18px;}
+header p{margin:2px 0 0; font-size:12px; color:var(--muted);}
+.wrap{max-width:560px; margin:0 auto; padding:14px 14px 0;}
+.card{background:var(--card); border-radius:var(--radius); padding:16px; margin-bottom:14px; border:1px solid #262c3a;}
+.card h2{margin:0 0 12px; font-size:15px;}
+.row3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;}
+.stat{background:var(--card2); border-radius:12px; padding:12px 10px; text-align:center;}
+.stat .lbl{font-size:11px; color:var(--muted); margin-bottom:4px;}
+.stat .val{font-size:15px; font-weight:700;}
+.val.green{color:var(--green);} .val.red{color:var(--red);} .val.blue{color:var(--blue);}
+.tabs{display:flex; background:var(--card); border-radius:12px; padding:4px; margin-bottom:14px; border:1px solid #262c3a;}
+.tabs button{flex:1; border:0; background:transparent; color:var(--muted); padding:10px; border-radius:9px; font-size:13px; font-weight:600;}
+.tabs button.on{background:var(--blue); color:#fff;}
+label{display:block; font-size:12px; color:var(--muted); margin:10px 0 6px;}
+input,select,textarea{width:100%; background:var(--card2); border:1px solid #2e3547; color:var(--text); border-radius:12px; padding:13px 12px; font-size:16px; outline:none;}
+input:focus,select:focus{border-color:var(--blue);}
+.chips{display:flex; gap:8px; flex-wrap:wrap;}
+.chip{border:1px solid #2e3547; background:var(--card2); color:var(--text); border-radius:999px; padding:10px 16px; font-size:14px; font-weight:600;}
+.chip.on{background:var(--blue); border-color:var(--blue); color:#fff;}
+.chip.gojek.on{background:var(--green); border-color:var(--green);}
+.chip.grab.on{background:var(--orange); border-color:var(--orange);}
+.btn{width:100%; border:0; border-radius:14px; padding:15px; font-size:16px; font-weight:700; color:#fff; background:var(--blue); margin-top:14px;}
+.btn.green{background:var(--green);} .btn.red{background:var(--red);}
+.btn.ghost{background:var(--card2); color:var(--text); border:1px solid #2e3547;}
+.item{display:flex; justify-content:space-between; align-items:center; background:var(--card2); border-radius:12px; padding:12px; margin-bottom:8px;}
+.item .t{font-size:14px; font-weight:600;}
+.item .s{font-size:11px; color:var(--muted); margin-top:2px;}
+.item .n{font-size:15px; font-weight:700; white-space:nowrap; margin-left:8px;}
+.item .n.in{color:var(--green);} .item .n.out{color:var(--red);}
+.item .act{display:flex; gap:6px; margin-top:6px;}
+.mini{border:1px solid #2e3547; background:transparent; color:var(--muted); border-radius:8px; padding:6px 10px; font-size:12px;}
+nav{position:fixed; bottom:0; left:0; right:0; background:rgba(15,17,21,.95); backdrop-filter:blur(8px); border-top:1px solid #242a36; display:flex; padding:8px 8px calc(10px + env(safe-area-inset-bottom)); z-index:10;}
+nav button{flex:1; border:0; background:transparent; color:var(--muted); font-size:11px; padding:8px 4px; border-radius:10px;}
+nav button.on{color:#fff; background:var(--card2);}
+nav button .ic{font-size:20px; display:block; margin-bottom:2px;}
+.page{display:none;} .page.on{display:block;}
+.empty{text-align:center; color:var(--muted); font-size:13px; padding:24px 0;}
+.bar{height:8px; background:var(--card2); border-radius:99px; overflow:hidden; margin-top:8px;}
+.bar > div{height:100%; border-radius:99px;}
+.plat{display:flex; align-items:center; gap:10px; margin-bottom:10px;}
+.plat .dot{width:12px; height:12px; border-radius:50%;}
+.plat .nm{flex:1; font-size:13px;}
+.plat .vl{font-size:13px; font-weight:700;}
+h3.sec{font-size:13px; color:var(--muted); margin:18px 0 8px; text-transform:uppercase; letter-spacing:.5px;}
+/* kunci PIN */
+#lockscreen{position:fixed; inset:0; z-index:100; background:var(--bg); display:flex; align-items:center; justify-content:center; padding:24px;}
+.lockbox{width:100%; max-width:340px; text-align:center;}
+.lockbox .big{font-size:52px; margin-bottom:8px;}
+.lockbox h2{margin:0 0 6px; font-size:20px;}
+.lockbox p{color:var(--muted); font-size:13px; margin:0 0 18px;}
+.pinrow{display:flex; gap:10px; justify-content:center; margin-bottom:18px;}
+.pinrow input{width:52px; height:60px; text-align:center; font-size:26px; font-weight:700; padding:0;}
+.pinrow input.filled{border-color:var(--green);}
+#lockmsg{min-height:20px; font-size:13px; color:var(--red); margin-bottom:10px;}
+#lockmsg.ok{color:var(--green);}
+.linklike{background:none; border:0; color:var(--muted); font-size:12px; text-decoration:underline; margin-top:14px;}
+.shake{animation:shake .35s;}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+body.locked header, body.locked .wrap, body.locked nav{display:none;}
+</style>
+</head>
+<body class="locked">
+<div id="lockscreen">
+  <div class="lockbox" id="lockSetup" style="display:none">
+    <div class="big">🔐</div>
+    <h2>Buat PIN</h2>
+    <p>PIN 4–6 angka untuk mengunci aplikasi di HP ini.</p>
+    <div class="pinrow" id="setupRow"></div>
+    <div id="lockmsg"></div>
+    <button class="btn" id="setupBtn">Simpan PIN</button>
+  </div>
+  <div class="lockbox" id="lockEnter" style="display:none">
+    <div class="big">🔒</div>
+    <h2>Masukkan PIN</h2>
+    <p>Untuk membuka Catat Pendapatan.</p>
+    <div class="pinrow" id="enterRow"></div>
+    <div id="lockmsg2"></div>
+    <button class="btn" id="unlockBtn">Buka</button><br>
+    <button class="linklike" id="resetPin">Lupa PIN? Hapus PIN & semua data</button>
+  </div>
+</div>
+<header>
+  <h1>💰 Catat Pendapatan</h1>
+  <p>Mitra Gojek & Grab</p>
+</header>
+
+<div class="wrap">
+  <!-- RINGKASAN -->
+  <div class="page on" id="pg-home">
+    <div class="tabs" id="rangeTabs">
+      <button class="on" data-r="day">Hari ini</button>
+      <button data-r="week">Minggu ini</button>
+      <button data-r="month">Bulan ini</button>
+    </div>
+    <div class="card">
+      <div class="row3">
+        <div class="stat"><div class="lbl">Masuk</div><div class="val green" id="stIn">Rp0</div></div>
+        <div class="stat"><div class="lbl">Keluar</div><div class="val red" id="stOut">Rp0</div></div>
+        <div class="stat"><div class="lbl">Bersih</div><div class="val blue" id="stNet">Rp0</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Per Platform</h2>
+      <div id="platList"></div>
+    </div>
+    <div class="card">
+      <h2>Pengeluaran Terbesar</h2>
+      <div id="expList"></div>
+    </div>
+  </div>
+
+  <!-- CATAT -->
+  <div class="page" id="pg-add">
+    <div class="tabs" id="typeTabs">
+      <button class="on" data-t="in">➕ Pemasukan</button>
+      <button data-t="out">➖ Pengeluaran</button>
+    </div>
+    <div class="card">
+      <div id="fIn">
+        <label>Platform</label>
+        <div class="chips" id="platChips">
+          <button class="chip gojek on" data-p="Gojek">🟢 Gojek</button>
+          <button class="chip grab" data-p="Grab">🟠 Grab</button>
+          <button class="chip" data-p="Lainnya">Lainnya</button>
+        </div>
+        <label>Jumlah trip / order</label>
+        <input type="number" id="trip" inputmode="numeric" placeholder="cth: 12">
+      </div>
+      <div id="fOut" style="display:none">
+        <label>Kategori</label>
+        <div class="chips" id="catChips">
+          <button class="chip on" data-c="Bensin">⛽ Bensin</button>
+          <button class="chip" data-c="Makan">🍜 Makan</button>
+          <button class="chip" data-c="Parkir">🅿️ Parkir</button>
+          <button class="chip" data-c="Servis">🔧 Servis</button>
+          <button class="chip" data-c="Pulsa">📱 Pulsa</button>
+          <button class="chip" data-c="Lainnya">Lainnya</button>
+        </div>
+      </div>
+      <label>Nominal (Rp)</label>
+      <input type="number" id="amt" inputmode="numeric" placeholder="cth: 150000">
+      <label>Tanggal</label>
+      <input type="date" id="dt">
+      <label>Catatan (opsional)</label>
+      <input type="text" id="note" placeholder="cth: lembur malam">
+      <button class="btn green" id="saveBtn">Simpan</button>
+      <button class="btn ghost" id="cancelEdit" style="display:none">Batal edit</button>
+    </div>
+  </div>
+
+  <!-- RIWAYAT -->
+  <div class="page" id="pg-hist">
+    <div class="card">
+      <h2>Riwayat</h2>
+      <div id="histList"></div>
+    </div>
+  </div>
+</div>
+
+<nav>
+  <button class="on" data-pg="pg-home"><span class="ic">📊</span>Ringkasan</button>
+  <button data-pg="pg-add"><span class="ic">➕</span>Catat</button>
+  <button data-pg="pg-hist"><span class="ic">🕘</span>Riwayat</button>
+</nav>
+
+<script>
+/* ===== KUNCI PIN ===== */
+const PINK='catat-pendapatan-pin';
+function pinRow(el,onInput){
+  el.innerHTML='';
+  const boxes=[];
+  for(let i=0;i<6;i++){const b=document.createElement('input');b.type='password';b.inputMode='numeric';b.maxLength=1;b.pattern='[0-9]*';el.appendChild(b);boxes.push(b);}
+  boxes.forEach((b,i)=>{
+    b.addEventListener('input',()=>{b.value=b.value.replace(/\D/g,'').slice(0,1);b.classList.toggle('filled',!!b.value);if(b.value&&i<5)boxes[i+1].focus();onInput&&onInput();});
+    b.addEventListener('keydown',e=>{if(e.key==='Backspace'&&!b.value&&i>0)boxes[i-1].focus();});
+  });
+  boxes[0].focus();
+  return ()=>boxes.map(b=>b.value).join('');
+}
+async function sha(s){
+  if(crypto.subtle){const d=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('catat#'+s));return[...new Uint8Array(d)].map(x=>x.toString(16).padStart(2,'0')).join('');}
+  let h=0x811c9dc5;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,0x01000193)>>>0;}return 'f'+h.toString(16);
+}
+const storedPin=localStorage.getItem(PINK);
+if(!storedPin){
+  document.getElementById('lockSetup').style.display='';
+  let first='', get=pinRow(document.getElementById('setupRow'));
+  const msg=document.getElementById('lockmsg');
+  const setupBtn=document.getElementById('setupBtn');
+  setupBtn.onclick=async()=>{
+    const v=get();
+    if(v.length<4){msg.style.color='var(--red)';msg.textContent='PIN minimal 4 angka.';return;}
+    if(!first){first=v;msg.style.color='var(--green)';msg.textContent='Ulangi PIN yang sama untuk konfirmasi.';get=pinRow(document.getElementById('setupRow'));setupBtn.textContent='Konfirmasi PIN';return;}
+    if(first!==v){msg.style.color='var(--red)';msg.textContent='PIN tidak sama, ulangi dari awal.';first='';setupBtn.textContent='Simpan PIN';get=pinRow(document.getElementById('setupRow'));return;}
+    localStorage.setItem(PINK,await sha(first));
+    unlock();
+  };
+}else{
+  document.getElementById('lockEnter').style.display='';
+  const get=pinRow(document.getElementById('enterRow'));
+  const msg=document.getElementById('lockmsg2');
+  document.getElementById('unlockBtn').onclick=async()=>{
+    const v=get();
+    if(await sha(v)===storedPin){unlock();}
+    else{msg.textContent='PIN salah, coba lagi.';const box=document.getElementById('lockEnter');box.classList.remove('shake');void box.offsetWidth;box.classList.add('shake');}
+  };
+  document.getElementById('resetPin').onclick=()=>{
+    if(confirm('Hapus PIN DAN semua catatan pendapatan? Tindakan ini tidak bisa dibatalkan.')){localStorage.clear();location.reload();}
+  };
+}
+function unlock(){document.body.classList.remove('locked');document.getElementById('lockscreen').style.display='none';}
+</script>
+<script>
+const K='catat-pendapatan-v1';
+let DB=JSON.parse(localStorage.getItem(K)||'{"items":[]}');
+const save=()=>localStorage.setItem(K,JSON.stringify(DB));
+const rp=n=>'Rp'+Number(n||0).toLocaleString('id-ID');
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+let fType='in', fPlat='Gojek', fCat='Bensin', editId=null, range='day';
+
+document.getElementById('dt').valueAsDate=new Date();
+
+// nav
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('nav button').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on');
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  document.getElementById(b.dataset.pg).classList.add('on');
+  if(b.dataset.pg==='pg-home')renderHome();
+  if(b.dataset.pg==='pg-hist')renderHist();
+});
+// type tabs
+document.querySelectorAll('#typeTabs button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('#typeTabs button').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); fType=b.dataset.t;
+  document.getElementById('fIn').style.display=fType==='in'?'':'none';
+  document.getElementById('fOut').style.display=fType==='out'?'':'none';
+  document.getElementById('saveBtn').className='btn '+(fType==='in'?'green':'red');
+});
+// chips
+function chips(id,cb){document.querySelectorAll('#'+id+' .chip').forEach(c=>c.onclick=()=>{document.querySelectorAll('#'+id+' .chip').forEach(x=>x.classList.remove('on'));c.classList.add('on');cb(c.dataset.p||c.dataset.c);});}
+chips('platChips',v=>fPlat=v); chips('catChips',v=>fCat=v);
+// range tabs
+document.querySelectorAll('#rangeTabs button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('#rangeTabs button').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); range=b.dataset.r; renderHome();
+});
+
+function inRange(dstr){
+  const d=new Date(dstr+'T00:00:00'), now=new Date();
+  const day=x=>x.toDateString();
+  if(range==='day')return day(d)===day(now);
+  if(range==='week'){const s=new Date(now); s.setDate(now.getDate()-now.getDay()); s.setHours(0,0,0,0); return d>=s&&d<=now;}
+  const m=d=>d.getFullYear()+'-'+d.getMonth(); return m(d)===m(now);
+}
+
+document.getElementById('saveBtn').onclick=()=>{
+  const amt=parseInt(document.getElementById('amt').value||'0',10);
+  const dt=document.getElementById('dt').value;
+  const note=document.getElementById('note').value.trim();
+  if(!amt||amt<=0){alert('Isi nominal dulu');return;}
+  if(!dt){alert('Isi tanggal dulu');return;}
+  const rec={id:editId||uid(),type:fType,amount:amt,date:dt,note,
+    platform:fType==='in'?fPlat:null, trip:fType==='in'?(parseInt(document.getElementById('trip').value||'0',10)||null):null,
+    category:fType==='out'?fCat:null, ts:Date.now()};
+  if(editId){const i=DB.items.findIndex(x=>x.id===editId); DB.items[i]=rec; editId=null;
+    document.getElementById('cancelEdit').style.display='none';
+    document.getElementById('saveBtn').textContent='Simpan';
+  }else DB.items.push(rec);
+  save();
+  document.getElementById('amt').value='';document.getElementById('note').value='';document.getElementById('trip').value='';
+  alert('Tersimpan ✓'); renderHome();
+  document.querySelector('nav button[data-pg="pg-home"]').click();
+};
+document.getElementById('cancelEdit').onclick=()=>{editId=null;
+  document.getElementById('cancelEdit').style.display='none';
+  document.getElementById('saveBtn').textContent='Simpan';
+  document.getElementById('amt').value='';document.getElementById('note').value='';document.getElementById('trip').value='';
+  document.querySelector('nav button[data-pg="pg-home"]').click();};
+
+function renderHome(){
+  const items=DB.items.filter(x=>inRange(x.date));
+  const tin=items.filter(x=>x.type==='in').reduce((a,x)=>a+x.amount,0);
+  const tout=items.filter(x=>x.type==='out').reduce((a,x)=>a+x.amount,0);
+  document.getElementById('stIn').textContent=rp(tin);
+  document.getElementById('stOut').textContent=rp(tout);
+  document.getElementById('stNet').textContent=rp(tin-tout);
+  // per platform
+  const plats={}; items.filter(x=>x.type==='in').forEach(x=>{plats[x.platform]=(plats[x.platform]||0)+x.amount;});
+  const colors={Gojek:'#22c55e',Grab:'#f97316',Lainnya:'#a855f7'};
+  const max=Math.max(1,...Object.values(plats));
+  document.getElementById('platList').innerHTML=Object.keys(plats).length?Object.entries(plats).map(([k,v])=>
+    `<div class="plat"><div class="dot" style="background:${colors[k]||'#3b82f6'}"></div><div class="nm">${k}</div><div class="vl">${rp(v)}</div></div><div class="bar"><div style="width:${Math.round(v/max*100)}%;background:${colors[k]||'#3b82f6'}"></div></div>`
+  ).join(''):'<div class="empty">Belum ada pemasukan</div>';
+  // pengeluaran per kategori
+  const cats={}; items.filter(x=>x.type==='out').forEach(x=>{cats[x.category]=(cats[x.category]||0)+x.amount;});
+  const cmax=Math.max(1,...Object.values(cats));
+  document.getElementById('expList').innerHTML=Object.keys(cats).length?Object.entries(cats).sort((a,b)=>b[1]-a[1]).map(([k,v])=>
+    `<div class="plat"><div class="nm">${k}</div><div class="vl" style="color:var(--red)">${rp(v)}</div></div><div class="bar"><div style="width:${Math.round(v/cmax*100)}%;background:var(--red)"></div></div>`
+  ).join(''):'<div class="empty">Belum ada pengeluaran</div>';
+}
+
+function renderHist(){
+  const items=[...DB.items].sort((a,b)=>b.date.localeCompare(a.date)||b.ts-a.ts).slice(0,100);
+  document.getElementById('histList').innerHTML=items.length?items.map(x=>{
+    const d=new Date(x.date+'T00:00:00');
+    const dstr=d.toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'});
+    const sub=x.type==='in'
+      ? `${x.platform}${x.trip?` • ${x.trip} trip`:''}${x.note?` • ${x.note}`:''}`
+      : `${x.category}${x.note?` • ${x.note}`:''}`;
+    return `<div class="item"><div><div class="t">${x.type==='in'?'🟢':'🔴'} ${dstr}</div><div class="s">${sub}</div>
+      <div class="act"><button class="mini" onclick="editRec('${x.id}')">Edit</button><button class="mini" onclick="delRec('${x.id}')">Hapus</button></div></div>
+      <div class="n ${x.type}">${x.type==='in'?'+':'−'}${rp(x.amount)}</div></div>`;
+  }).join(''):'<div class="empty">Belum ada catatan.<br>Ketuk ➕ Catat untuk mulai.</div>';
+}
+window.editRec=id=>{const x=DB.items.find(v=>v.id===id); if(!x)return; editId=id;
+  fType=x.type;
+  document.querySelectorAll('#typeTabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===fType));
+  document.getElementById('fIn').style.display=fType==='in'?'':'none';
+  document.getElementById('fOut').style.display=fType==='out'?'':'none';
+  document.getElementById('saveBtn').className='btn '+(fType==='in'?'green':'red');
+  if(fType==='in'){fPlat=x.platform;document.querySelectorAll('#platChips .chip').forEach(c=>c.classList.toggle('on',c.dataset.p===fPlat));
+    document.getElementById('trip').value=x.trip||'';}
+  else{fCat=x.category;document.querySelectorAll('#catChips .chip').forEach(c=>c.classList.toggle('on',c.dataset.c===fCat));}
+  document.getElementById('amt').value=x.amount; document.getElementById('dt').value=x.date; document.getElementById('note').value=x.note||'';
+  document.getElementById('saveBtn').textContent='Simpan perubahan';
+  document.getElementById('cancelEdit').style.display='';
+  document.querySelector('nav button[data-pg="pg-add"]').click();};
+window.delRec=id=>{if(confirm('Hapus catatan ini?')){DB.items=DB.items.filter(x=>x.id!==id);save();renderHist();renderHome();}};
+renderHome();
+</script>
+</body>
+</html>
